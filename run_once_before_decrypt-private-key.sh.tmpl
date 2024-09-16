@@ -1,0 +1,17 @@
+#!/bin/sh
+
+{{ if eq .chezmoi.os "windows" }}
+    # ًWindiws powershell
+    if (-not (Test-Path "${env:USERPROFILE}\.config\chezmoi\key.txt")) {
+        mkdir "${env:USERPROFILE}\.config\chezmoi"
+        chezmoi age decrypt --output "${env:USERPROFILE}\.config\chezmoi\key.txt" --passphrase "{{ .chezmoi.sourceDir }}/key.txt.age"
+        attrib +R "${env:USERPROFILE}\.config\chezmoi\key.txt"
+    }
+{{ else }}
+    if [ ! -f "${HOME}/.config/chezmoi/key.txt" ]; then
+        mkdir -p "${HOME}/.config/chezmoi"
+        chezmoi age decrypt --output "${HOME}/.config/chezmoi/key.txt" --passphrase "{{ .chezmoi.sourceDir }}/key.txt.age"
+        chmod 600 "${HOME}/.config/chezmoi/key.txt"
+    fi
+{{ end }}
+
